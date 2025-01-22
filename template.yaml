@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  t1EcommerceAPI
+
+  Sample SAM Template for t1EcommerceAPI
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 10
+
+    # You can add LoggingConfig parameters such as the Logformat, Log Group, and SystemLogLevel or ApplicationLogLevel. Learn more here https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html#sam-function-loggingconfig.
+    LoggingConfig:
+      LogFormat: JSON
+Resources:
+  # Create Commerce Lambda Function
+  t1EcreateCommerce:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: t1EcreateCommerce # Nombre personalizado para la función Lambda
+      CodeUri: createCommerce/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+      - x86_64
+      Events:
+        Commerce:
+          Type: Api
+          StageName: dev
+          Properties:
+            Path: /
+            Method: post
+      MemorySize: 256
+      Timeout: 15
+      Role: arn:aws:iam::943264174816:role/T1Envios-lambda-Default-Rol
+      Layers:
+        - arn:aws:lambda:us-east-1:943264174816:layer:guide-libraries:4
+
+Outputs:
+  CommerceApi:
+    Description: "API Gateway endpoint URL for T1envios Create Commerce"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/dev/"
+  t1EcreateCommerce:
+    Description: "Create Commerce in T1Envios Lambda Function ARN"
+    Value: !GetAtt t1EcreateCommerce.Arn
